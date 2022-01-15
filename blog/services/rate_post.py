@@ -1,9 +1,12 @@
+from django.db import transaction
+
 from blog.models import UserRate
 from blog.services.get_post_by_slug import get_post_by_slug
 from common.error import ValidatorException
 from users.models import Person
 
 
+@transaction.atomic
 def rate_post(
         user: Person,
         post_slug: str,

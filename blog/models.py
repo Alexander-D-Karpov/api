@@ -1,4 +1,3 @@
-from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -13,12 +12,15 @@ class Post(models.Model):
     date_pub = models.DateTimeField(auto_now_add=True)
     post_views = models.IntegerField(default=0)
     isMD = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, db_index=True, on_delete=models.CASCADE)
     # Rating
     rating = models.FloatField(
         default=0, validators=[MaxValueValidator(5), MinValueValidator(0)]
     )
     rating_count = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = "Post"
 
     def __str__(self):
         return self.title
@@ -32,7 +34,7 @@ class UserRate(models.Model):
     )
 
     def __str__(self):
-        return self.user.username + " " + self.post.title + " " + str(self.rating)
+        return f"{self.user.username} {self.post.title} {str(self.rating)}"
 
 
 class Comment(models.Model):
@@ -46,4 +48,4 @@ class Comment(models.Model):
         ordering = ["created_on"]
 
     def __str__(self):
-        return "Comment {} by {}".format(self.body, self.name)
+        return f"Comment {self.body} by {self.name}"
